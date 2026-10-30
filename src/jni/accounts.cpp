@@ -6,7 +6,8 @@ std::shared_ptr<AccountManager> AccountManager::get(std::shared_ptr<Context>) {
 }
 
 std::shared_ptr<FakeJni::JArray<Account>> AccountManager::getAccountsByType(std::shared_ptr<FakeJni::JString> type) {
-    // Log::info("Account", type->asStdString().c_str());
-    // return std::make_shared<FakeJni::JArray<Account>, std::initializer_list<std::shared_ptr<Account>>>({std::make_shared<Account>()});
+    // Diagnostics: log what the game asks for. If Realms/identity screens
+    // degrade, the fix is to populate this array with the signed-in user.
+    Log::info("Account", "getAccountsByType(%s) -> 0 accounts", type->asStdString().c_str());
     return std::make_shared<FakeJni::JArray<Account>>(0);
 }

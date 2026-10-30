@@ -1,3 +1,4 @@
+#include <log.h>
 #include "store.h"
 
 NativeStoreListener::NativeStoreListener(FakeJni::JLong nativePtr) : nativePtr(nativePtr) {
@@ -46,11 +47,13 @@ std::shared_ptr<FakeJni::JString> Store::getStoreId() {
 }
 
 std::shared_ptr<FakeJni::JString> Store::getProductSkuPrefix() {
-    return {};
+    // Must not be null: the game dereferences the returned JString when
+    // building store/Realms SKU queries; an empty prefix means "plain SKUs".
+    return std::make_shared<FakeJni::JString>("");
 }
 
 std::shared_ptr<FakeJni::JString> Store::getRealmsSkuPrefix() {
-    return {};
+    return std::make_shared<FakeJni::JString>("");
 }
 
 std::shared_ptr<ExtraLicenseResponseData> Store::getExtraLicenseData() {
@@ -71,13 +74,15 @@ void Store::queryProducts(std::shared_ptr<FakeJni::JArray<FakeJni::JString>> arg
 }
 
 void Store::purchase(std::shared_ptr<FakeJni::JString> arg0, FakeJni::JBoolean arg1, std::shared_ptr<FakeJni::JString> arg2) {
-    this->storeListener->onPurchaseFailed(std::make_shared<FakeJni::JString>("Hi"));
+    Log::info("Store", "purchase(%s) refused - no store integration in launcher", arg0->asStdString().c_str());
+    this->storeListener->onPurchaseFailed(std::make_shared<FakeJni::JString>("Purchases are not available in the Linux launcher"));
 }
 
 void Store::acknowledgePurchase(std::shared_ptr<FakeJni::JString> arg0, std::shared_ptr<FakeJni::JString> arg1) {
 }
 
 void Store::queryPurchases() {
+    Log::info("Store", "queryPurchases() -> 0 purchases (no store integration)");
     this->storeListener->onQueryPurchasesSuccess(std::make_shared<FakeJni::JArray<Purchase>>());
 }
 
